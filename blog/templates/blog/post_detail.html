@@ -2,13 +2,15 @@
     {% extends 'blog/base.html' %}
    {% load staticfiles %} 
     {% block content %}
-        <div class="post">
+        <div class="fecha">
             {% if post.fecha_publicado %}
-                <div class="fecha">
-                    {{ post.fecha_publicado }}
-                </div>
+                {{ post.fecha_publicado }}
             {% endif %}
-            <h1>{{ post.titulo }}</h1>
-            <p>{{ post.texto|linebreaksbr }}</p>
-        </div>
+            </div>
+            <div class="post">
+                <a class="btn btn-default" href="{% url 'post_edit' pk=post.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
+                <h1>{{ post.titulo }}</h1>
+                
+                <p>{{ post.texto|linebreaksbr }}</p>
+            </div>
     {% endblock %}

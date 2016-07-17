@@ -1,10 +1,10 @@
 
-    {% extends 'blog/base.html' %}
+{% extends 'blog/base.html' %}
  {% load staticfiles %}
     {% block content %}
         {% for post in posts %}
             <div class="post">
-                <div class="date">
+                <div class="fecha">
                     {{ post.fecha_publicado }}
                 </div>
                 <h1><a href="{% url 'blog.views.post_detail' pk=post.pk %}">{{ post.titulo }}</a></h1>
