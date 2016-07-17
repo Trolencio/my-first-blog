@@ -1,0 +1,335 @@
+Para crear un nuevo virtualenv llamado simpleBlog, debes abrir la consola y escribe 
+
+C:\Programacion\dsDjPy> C:\Python35-32\python -m venv dsDjPy
+
+Activar el virtualenv creado
+
+C:\Programacion\dsDjPy> dsDjPy\Scripts\activate
+
+
+Instalar Django
+
+Ahora que tienes tu virtualenv iniciado, puedes instalar Django usando pip. 
+En la consola, ejecuta pip install django==1.8 
+(fíjate que utilizamos un doble signo igual: ==).
+
+(dsDjPy) C:\Programacion\dsDjPy> pip install django==1.8
+
+
+Crear el proyecto simpleBlog
+
+(dsDjPy) C:\Programacion\dsDjPy> django-admin.py startproject simpleBlog .
+
+Nota Verifica dos veces que hayas incluido el punto (.) al final del comando, 
+es importante porque le dice al script que instale Django en el directorio actual.
+
+
+django-admin.py es un script que creará los archivos y directorios para ti. 
+Ahora deberías tener una estructura de directorios parecida a esto:
+
+simpleBlog
++---manage.py
++---mysite
+        settings.py
+        urls.py
+        wsgi.py
+        __init__.py
+
+manage.py es un script que ayuda con la administración del sitio. 
+Con ello podremos iniciar un servidor web en nuestro ordenador 
+sin necesidad de instalar nada más, entre otras cosas.
+
+El archivo settings.py contiene la configuración de tu sitio web
+
+Vamos a hacer algunos cambios en mysite/settings.py. 
+Abre el archivo usando el editor de código 
+y agrega al final la siguiente linea:
+
+#ruta para los archivos estáticos
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+Para crear una base de datos para nuestro blog, 
+ejecutemos lo siguiente en la consola: 
+
+(dsDjPy) C:\Programacion\dsDjPy> python manage.py migrate 
+
+(necesitamos estar en el directorio de dsDjPy que contiene el archivo manage.py).
+
+
+Si eso va bien, deberías ver algo así:
+Operations to perform:
+  Synchronize unmigrated apps: staticfiles, messages
+  Apply all migrations: sessions, auth, contenttypes, admin
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+  Installing custom SQL...
+Running migrations:
+  Rendering model states... DONE
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying sessions.0001_initial... OK
+
+¡Y listo! ¡Es hora de iniciar el servidor web y ver si nuestro sitio web está funcionando!
+
+Debes estar en el directorio que contiene el archivo manage.py 
+(en la carpeta dsDjPy). En la consola, podemos iniciar el 
+servidor web ejecutando 
+
+(dsDjPy) C:\Programacion\dsDjPy> python manage.py runserver
+
+si todo salio bien aparecera esto:
+Performing system checks...
+
+System check identified no issues (0 silenced).
+July 16, 2016 - 19:51:02
+Django version 1.8, using settings 'simpleBlog.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+
+
+Ahora todo lo que debes hacer es verificar que tu sitio esté corriendo - abre tu navegador 
+(Firefox, Chrome, Safari, Internet Explorer o el que utilices) e ingresa la dirección:
+
+http://127.0.0.1:8000/
+
+
+Modelos en Django - Diseño e implemetacion de la base de Datos
+
+Lo que queremos crear ahora es algo que va a almacenar todos los posts en nuestro blog.
+¿cómo modelamos los posts en el blog? 
+Bueno, seguro que nuestros posts necesitan un texto con su contenido y un título, 
+¿cierto? También sería bueno saber quién lo escribió, así que necesitamos un autor. 
+Por último, queremos saber cuándo el post fue creado y publicado.
+
+Post
+--------
+title
+text
+author
+created_date
+published_date
+
+Sería bueno tener algún método que publique el registro, 
+Así que vamos a necesitar el método publicar.
+
+Clase: Post; 
+Atributos: titulo, texto, autor, fecha_creado, fecha_publicado; 
+Metodos: publicar
+
+podemos empezar a moderlarlo en Django
+
+Un modelo en Django es un tipo especial de objeto que se guarda en la base de datos.
+
+Creando una aplicación
+
+Para mantener todo en orden, crearemos una aplicación separada dentro de nuestro proyecto. 
+Para crear una aplicación, necesitamos ejecutar el siguiente comando en la consola 
+(dentro de la carpeta de dsDjPy donde está el archivo manage.py):
+
+(simpleBlog) ~/dsDjPy$ python manage.py startapp blog
+
+Vas a notar que se crea un nuevo directorio llamado blog 
+y contiene una serie de archivos. Nuestros directorios y 
+archivos en nuestro proyecto deberían parecerse a esto:
+
+
+dsDjPy
++-- simpleBlog
+|       __init__.py
+|       settings.py
+|       urls.py
+|       wsgi.py
++-- manage.py
++-- blog
+    +-- migrations
+    |       __init__.py
+    +-- __init__.py
+    +-- admin.py
+    +-- models.py
+    +-- tests.py
+    +-- views.py
+
+Después de crear una aplicación también necesitamos decirle a 
+Django que debe utilizarla. Lo hacemos en el archivo mysite/settings.py. 
+Tenemos que encontrar INSTALLED_APPS y añadir una línea que contenga 
+'blog', justo por encima de ). 
+
+
+Creando el Modelo Post
+
+En el archivo blog/models.py definimos todos los objetos llamados 
+Models - este es un lugar en el cual definiremos nuestro modelo post.
+
+Vamos abrir blog/models.py, quitamos todo y escribimos un código como este:
+
+    from django.db import models
+    from django.utils import timezone
+
+    class Post(models.Model):
+        author = models.ForeignKey('auth.User')
+        title = models.CharField(max_length=200)
+        text = models.TextField()
+        created_date = models.DateTimeField(
+                default=timezone.now)
+        published_date = models.DateTimeField(
+                blank=True, null=True)
+
+        def publish(self):
+            self.published_date = timezone.now()
+            self.save()
+
+        def __str__(self):
+            return self.title
+
+
+Claro, traducir los nombres de campos
+
+Crear tablas para los modelos en tu base de datos
+
+El último paso es añadir nuestro nuevo modelo a nuestra base de datos. 
+Primero tenemos que hacer que Django sepa que tenemos algunos 
+cambios en nuestro modelo (acabamos de crearlo), 
+escribe 
+
+python manage.py makemigrations blog. 
+
+Se verá así:
+
+(dsDjPy) C:\Programacion\dsDjPy>python manage.py makemigrations blog
+Migrations for 'blog':
+  0001_initial.py:
+    - Create model Post
+
+
+Django preparará un archivo de migración que tenemos que aplicar 
+ahora a nuestra base de datos escribiendo 
+
+python manage.py migrate blog
+
+El resultado debe ser:
+
+(dsDjPy) C:\Programacion\dsDjPy>python manage.py migrate blog
+Operations to perform:
+  Apply all migrations: blog
+Running migrations:
+  Rendering model states... DONE
+  Applying blog.0001_initial... OK
+
+Nuestro modelo de Post está ahora en nuestra base de datos.
+
+
+Administrador de Django
+
+Para agregar, editar y borrar los posts que hemos modelado, 
+utilizaremos el administrador de Django.
+
+Vamos a abrir el archivo blog/admin.py y reemplazar su contenido con esto:
+
+    from django.contrib import admin
+    from .models import Post
+
+    admin.site.register(Post)
+
+
+Ya se puede pasar al browser y colocar la direccion:
+http://127.0.0.1:8000/admin/
+
+Para poder ingresar deberás crear un superusuario
+con
+
+python manage.py createsuperuser
+
+La salida de este comando debería verse así 
+(nombre de usuario y email deberían ser los tuyos):
+
+(dsDjPy) C:\Programacion\dsDjPy>python manage.py migrate blog
+Operations to perform:
+  Apply all migrations: blog
+Running migrations:
+  Rendering model states... DONE
+  Applying blog.0001_initial... OK
+
+(dsDjPy) C:\Programacion\dsDjPy>python manage.py createsuperuser
+Username (leave blank to use 'orlando2004'):
+Email address:
+Password:
+Password (again):
+Error: Blank passwords aren't allowed.
+Password:
+Password (again): ^C
+(dsDjPy) C:\Programacion\dsDjPy>python manage.py createsuperuser
+Username (leave blank to use 'orlando2004'): trolencio
+Email address: trolencio2004@gmail.com
+Password:
+Password (again):
+Error: Your passwords didn't match.
+Password:
+Password (again):
+Superuser created successfully.
+
+Si quieres saber más sobre el administrador de Django, puedes visitar la documentación de Django: https://docs.djangoproject.com/en/1.8/ref/contrib/admin/
+
+Este probablemente sea un buen momento para tomar un café (o té) o algo para comer y re-energizarte. 
+Creaste tu primer modelo de Django - ¡mereces un pequeño recreo!
+
+¡Despliega!
+Hasta ahora tu sitio web estaba disponible sólo en tu ordenador, ¡ahora aprenderás cómo desplegarlo! El despliegue es el proceso de publicar tu aplicación en Internet para que la gente pueda acceder y ver tu aplicación
+
+Iniciar nuestro repositorio Git
+
+Git rastrea los cambios realizados a un grupo determinado de ficheros 
+en lo que llamamos un repositorio de código (o "repo" para abreviar). 
+Iniciemos uno para nuestro proyecto. 
+Abre la consola y ejecuta los siguientes comandos en 
+el directorio de dsDjPy
+
+$ git init
+Initialized empty Git repository in ~/dsDjPy/.git/
+$ git config user.name "trolencio"
+$ git config user.email trolencio@gmail.com
+
+
+Inicializar el repositorio git es algo que sólo necesitamos hacer una vez 
+por proyecto (y no tendrás que volver a poner tu usuario y correo electrónico nunca más)
+
+Git llevará un registro de los cambios realizados en todos 
+los ficheros y carpetas en este directorio, 
+pero hay algunos ficheros que queremos que ignore. 
+Esto lo hacemos creando un fichero llamado .gitignore en el directorio base. 
+Abre tu editor y crea un nuevo fichero con el siguiente contenido:
+
+*.pyc
+__pycache__
+myvenv
+db.sqlite3
+.DS_Store
+
+Y guárdalo como .gitignore en la primera carpeta "dsDjPy".
+
+Es buena idea utilizar el comando git status 
+antes de git add o cuando no estés segura de lo que va a hacer, 
+para evitar cualquier sorpresa 
+(por ejemplo, añadir o hacer commit de ficheros no deseados). 
+El comando git status devuelve información sobre los ficheros 
+sin seguimiento (untracked), modificados, preparados (staged), 
+el estado de la rama y mucho más.
+
+Y finalmente guardamos nuestros cambios. 
+Ve a la consola y ejecuta estos comandos:
+
+$ git add --all .
+$ git commit -m "Mi app Django Girls, primer commit"
+ [...]
+ 13 files changed, 200 insertions(+)
+ create mode 100644 .gitignore
+ [...]
+ create mode 100644 mysite/wsgi.py
+
