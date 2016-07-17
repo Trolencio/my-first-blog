@@ -275,7 +275,9 @@ Password:
 Password (again):
 Superuser created successfully.
 
-Si quieres saber más sobre el administrador de Django, puedes visitar la documentación de Django: https://docs.djangoproject.com/en/1.8/ref/contrib/admin/
+Si quieres saber más sobre el administrador de Django,
+ puedes visitar la documentación de Django: 
+https://docs.djangoproject.com/en/1.8/ref/contrib/admin/
 
 Este probablemente sea un buen momento para tomar un café (o té) o algo para comer y re-energizarte. 
 Creaste tu primer modelo de Django - ¡mereces un pequeño recreo!
@@ -332,4 +334,193 @@ $ git commit -m "Mi app Django Girls, primer commit"
  create mode 100644 .gitignore
  [...]
  create mode 100644 mysite/wsgi.py
+
+
+Enviar nuestro código a GitHub
+
+Visita GitHub.com y registra una nueva cuenta de usuario gratuita. 
+Luego, crea un nuevo repositorio con el nombre "my-first-blog". 
+Deja desmarcada la opción "Initialise with a README", 
+deja la opción .gitignore en blanco (lo hemos hecho a mano) 
+y deja la licencia como "None".
+
+En la próxima pantalla verás la URL para clonar tu repositorio. 
+Elige la versión "HTTPS", cópiala y en un momento la pegaremos en la consola:
+
+Ahora tenemos que conectar el repositorio Git de tu ordenador con el que está en GitHub.
+
+$ git remote add origin https://github.com/<your-github-username>/my-first-blog.git
+$ git push -u origin master
+
+
+Escribe tu nombre de usuario y contraseña de GitHub y deberías ver algo así:
+
+Username for 'https://github.com': hjwp
+Password for 'https://hjwp@github.com':
+Counting objects: 6, done.
+Writing objects: 100% (6/6), 200 bytes | 0 bytes/s, done.
+Total 3 (delta 0), reused 0 (delta 0)
+To https://github.com/hjwp/my-first-blog.git
+ * [new branch]      master -> master
+Branch master set up to track remote branch master from origin.
+
+Tu código está ahora en GitHub. ¡Ve y míralo! Verás que está en buena compañía; 
+Django, el Tutorial de Django Girls y muchos otros grandes proyectos de código 
+abierto también alojan su código en GitHub :)
+
+Configurar nuestro blog en PythonAnywhere
+
+Es hora de registrar una cuenta gratuita de tipo "Beginner" en PythonAnywhere.
+
+    www.pythonanywhere.com
+
+
+Bajar nuestro código en PythonAnywhere
+
+Cuando te hayas registrado en PythonAnywhere serás redirigida 
+a tu panel de control o página "Consoles". Elije la opción 
+para iniciar una consola "Bash", que es la versión PythonAnywhere 
+de una consola, como la que tienes en tu PC
+
+Descarguemos nuestro código desde GitHub a PythonAnywhere 
+mediante la creación de un "clon" del repositorio. 
+Escribe lo siguiente en la consola de PythonAnywhere:
+
+$ git clone https://github.com/trolencio/my-first-blog.git
+
+
+Crear un virtualenv en PythonAnywhere
+
+Tal y como hiciste en tu propio ordenador, 
+puedes crear un virtualenv en PythonAnywhere. En la consola Bash, escribe:
+
+20:20 ~ $ cd my-first-blog
+
+20:20 ~ $ virtualenv --python=python3.4 myvenv
+Running virtualenv with interpreter /usr/bin/python3.4
+[...]
+Installing setuptools, pip...done.
+
+20:20 ~ $ source myvenv/bin/activate
+
+(myvenv)20:20 ~ $  pip install django==1.8 whitenoise
+Collecting django
+[...]
+Successfully installed django-1.8 whitenoise-1.0.6
+
+
+Recopilar ficheros estáticos
+
+¿Te estabas preguntando qué es eso de "whitenoise"? 
+Es una herramienta para servir los llamados "ficheros estáticos". 
+Los ficheros estáticos funcionan de distinta forma en los 
+servidores en comparación con cómo lo hacen en nuestro propio 
+ordenador y necesitamos una herramienta como "whitenoise" para servirlos.
+
+Aprenderemos un poco más sobre los ficheros estáticos más adelante, 
+cuando editemos el CSS de nuestro sitio.
+
+Por ahora sólo necesitamos ejecutar en el servidor un comando adicional 
+llamado "collectstatic". Le dice a Django que recopile todos 
+los ficheros estáticos que necesita en el servidor. 
+Por el momento, principalmente son los ficheros estáticos que hacen 
+que el panel de administración esté bonito.
+
+20:20 ~ $ python manage.py collectstatic
+
+You have requested to collect static files at the destination
+location as specified in your settings:
+
+    /home/edith/my-first-blog/static
+
+This will overwrite existing files!
+Are you sure you want to do this?
+
+Type 'yes' to continue, or 'no' to cancel: yes
+
+Escribe "yes", ¡y ahí va! ¿No te encanta hacer que las 
+computadoras impriman páginas y páginas de texto imposible de entender? 
+Siempre hago ruiditos para acompañarlo. Brp, brp brp...
+
+
+Crear la base de datos en PythonAnywhere
+
+Aquí hay otra cosa que es diferente entre tu ordenador y el servidor: 
+éste utiliza una base de datos diferente. Por lo tanto, las cuentas de usuario 
+y las entradas pueden ser diferentes en el servidor y en tu ordenador.
+
+Así que inicializamos la base de datos en el servidor igual que lo 
+hicimos en nuestro ordenador, con migrate y createsuperuser:
+
+(myvenv)20:20 ~ $ python manage.py migrate
+Operations to perform:
+[...]
+  Applying sessions.0001_initial... OK
+
+
+(myvenv)20:20 ~ $ python manage.py createsuperuser
+
+
+Publicar nuestro blog como una aplicación web
+
+Ahora que nuestro código está en PythonAnywhere, el virtualenv está listo, 
+los ficheros estáticos han sido recopilados y la base de datos está inicializada, 
+estamos listas para publicarla como una aplicación web.
+
+Haz clic en el logo de PythonAnywhere para volver al panel principal, 
+haz clic en la pestaña Web y pincha en Add a new web app.
+
+En la ventana de diálogo, después de confirmar el nombre de dominio, 
+elije manual configuration (configuración manual) (NB la opción "Django" no). 
+Luego, elije Python 3.4 y haz clic en "Next" para terminar con el asistente.
+
+
+Configurar el virtualenv
+
+Serás redirigida a la pantalla de configuración de PythonAnywhere 
+para tu aplicación web, a la que deberás acceder cada vez que quieras 
+hacer cambios en la aplicación del servidor.
+
+En la sección "Virtualenv", haz clic en el texto rojo que dice 
+"Enter the path to a virtualenv" (Introduce la ruta a un virtualenv) y
+ escribe: /home/<tu-usuario>/my-first-blog/myvenv/
+
+
+Configurar el fichero WSGI
+
+Django funciona utilizando el "protocolo WSGI", 
+un estándar para servir sitios web usando Python, 
+que PythonAnywhere soporta. La forma de configurar 
+PythonAnywhere para que reconozca nuestro blog Django 
+es editar un fichero de configuración WSGI.
+
+Haz clic en el enlace "WSGI configuration file" 
+(en la sección "Code" en la parte de arriba de la página; 
+se llamará algo parecido a 
+
+/var/www/<tu-usuario>_pythonanywhere_com_wsgi.py) 
+
+y te redirigirá al editor.
+
+Elimina todo el contenido actual y reemplázalo con algo como esto:
+
+Nota asegúrate de elegir la opción de "Manual configuration", no la de "Django". 
+Somos demasiado buenas para la configuración por defecto de Django de PythonAnywhere ;-)
+
+
+Este fichero se encarga de decirle a PythonAnywhere dónde vive nuestra 
+aplicación web y cómo se llama el fichero de configuración de Django. 
+También configura la herramienta para ficheros estáticos "whitenoise".
+
+Dale a Save y vuelve a la pestaña Web.
+
+¡Todo listo! Dale al botón verde grande que dice Reload y podrás ver tu aplicación. 
+Verás un enlace a ella en la parte de arriba de la página.
+Django urls
+
+Vamos a construir nuestra primera página web -- ¡una página de inicio para tu blog! 
+Pero primero, vamos a aprender un poco sobre Django urls.
+
+Se colocaron lineaas de codigo adicional en los archivos urls con expresiones 
+regulares, invocando a lz pagina de inicio y una nueva pagina post_list
 
