@@ -1,32 +1,16 @@
-<html>
 
-
-    
-
-    <head>
-    {% load staticfiles %}
-    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
-    
-    <title>Los Posts en Simple Blog</title>
-    
-    <style>
-    
-   
-        
-    </style>
-    
-    <body>
-        <div>
-            <h1><a href="/">Los Posts en Simple Blog</a></h1>
-        </div>
-    
+    {% extends 'blog/base.html' %}
+ {% load staticfiles %}
+    {% block content %}
         {% for post in posts %}
-            <div>
-                <p>publicado : {{ post.fecha_publicado }}</p>
-                <h1><a href="">{{ post.titulo }}</a></h1>
+            <div class="post">
+                <div class="date">
+                    {{ post.fecha_publicado }}
+                </div>
+                <h1><a href="{% url 'blog.views.post_detail' pk=post.pk %}">{{ post.titulo }}</a></h1>
+<!--                
                 <p>{{ post.texto|linebreaksbr }}</p>
+-->
             </div>
         {% endfor %}
-    </body>
-    </head>
-</html>
+    {% endblock content %}
