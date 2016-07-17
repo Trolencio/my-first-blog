@@ -1,5 +1,5 @@
 <html>
-        <head>
+<!---        <head>
             <title>Hola blog</title>
         </head>
         <h1>Un titulo : Hi there!</h1>
@@ -7,7 +7,20 @@
         <h3>Un subsubtitulo : sigue hasta el h6</h3>
         <em>la etiqueta em pone en cursiva tu texto</em>
         <strong>strong pone en negrita tu texto</strong>
-       <p>Hi there!</p>
+        <div>{{ posts }}</div>
+        <div>{{ posts }}</div>
+        <p>Hi there!</p>
        <p>It works!</p>
-       <p>we did it</p>
+       <p>we did it</p>  -->
+    <div>
+        <h1><a href="/">Los Posts en Simple Blog</a></h1>
+    </div>
+
+    {% for post in posts %}
+        <div>
+            <p>publicado : {{ post.fecha_publicado }}</p>
+            <h1><a href="">{{ post.titulo }}</a></h1>
+            <p>{{ post.texto|linebreaksbr }}</p>
+        </div>
+    {% endfor %}
 </html>
